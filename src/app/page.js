@@ -148,10 +148,6 @@ function Page() {
           </a>
         </div>
       </div>
-      <script
-        src="http://localhost:3000/embed.js"
-        data-testimonial-id="680db84b316f53c9c864b745"
-      ></script>
     </div>
   );
 }
