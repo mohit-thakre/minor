@@ -1,25 +1,25 @@
-"use client"
-import React, { useState } from 'react';
-import axios from 'axios';
-import toast, { Toaster } from 'react-hot-toast';
+"use client";
+import React, { useState } from "react";
+import axios from "axios";
+import toast, { Toaster } from "react-hot-toast";
 import { ClipLoader } from "react-spinners";
-import { useRouter } from 'next/navigation'
-import Link from 'next/link';
-import { motion } from 'framer-motion';
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { motion } from "framer-motion";
 
 const Signin = () => {
-  const router = useRouter()
-  const [loading, setLoading] = useState(false)
+  const router = useRouter();
+  const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
-    email: '',
-    password: ''
+    email: "",
+    password: "",
   });
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({
       ...formData,
-      [name]: value
+      [name]: value,
     });
   };
 
@@ -27,13 +27,14 @@ const Signin = () => {
     setLoading(true);
     e.preventDefault();
     try {
-      const response = await axios.post('/api/user/signin', formData);
-      toast.success('User Login successfully!');
-      router.push('/profile')
+      const response = await axios.post("/api/user/signin", formData);
+      toast.success("User Login successfully!");
+      router.push("/profile");
+      localStorage.setItem("isLogin", true);
       console.log(response.data);
     } catch (error) {
-      console.error('Error:', error);
-      toast.error('Failed to login user!');
+      console.error("Error:", error);
+      toast.error("Failed to login user!");
     } finally {
       setLoading(false);
     }
@@ -48,7 +49,9 @@ const Signin = () => {
         className="max-w-md w-full space-y-8 bg-black bg-opacity-50 p-10 rounded-xl backdrop-filter backdrop-blur-lg shadow-2xl"
       >
         <div>
-          <h2 className="mt-6 text-center text-4xl font-extrabold text-white">Welcome Back</h2>
+          <h2 className="mt-6 text-center text-4xl font-extrabold text-white">
+            Welcome Back
+          </h2>
           <p className="mt-2 text-center text-sm text-gray-300">
             Sign in to your account
           </p>
@@ -56,7 +59,9 @@ const Signin = () => {
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           <div className="rounded-md shadow-sm -space-y-px">
             <div>
-              <label htmlFor="email-address" className="sr-only">Email address</label>
+              <label htmlFor="email-address" className="sr-only">
+                Email address
+              </label>
               <input
                 id="email-address"
                 name="email"
@@ -69,7 +74,9 @@ const Signin = () => {
               />
             </div>
             <div>
-              <label htmlFor="password" className="sr-only">Password</label>
+              <label htmlFor="password" className="sr-only">
+                Password
+              </label>
               <input
                 id="password"
                 name="password"
@@ -91,13 +98,19 @@ const Signin = () => {
                 type="checkbox"
                 className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
               />
-              <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-300">
+              <label
+                htmlFor="remember-me"
+                className="ml-2 block text-sm text-gray-300"
+              >
                 Remember me
               </label>
             </div>
 
             <div className="text-sm">
-              <a href="#" className="font-medium text-indigo-400 hover:text-indigo-300">
+              <a
+                href="#"
+                className="font-medium text-indigo-400 hover:text-indigo-300"
+              >
                 Forgot your password?
               </a>
             </div>
@@ -110,16 +123,15 @@ const Signin = () => {
               type="submit"
               className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-150 ease-in-out"
             >
-              {loading ? (
-                <ClipLoader size={20} color="#ffffff" />
-              ) : (
-                "Sign In"
-              )}
+              {loading ? <ClipLoader size={20} color="#ffffff" /> : "Sign In"}
             </motion.button>
           </div>
         </form>
         <div className="text-center">
-          <Link className="font-medium text-indigo-400 hover:text-indigo-300 transition duration-150 ease-in-out" href="/signup">
+          <Link
+            className="font-medium text-indigo-400 hover:text-indigo-300 transition duration-150 ease-in-out"
+            href="/signup"
+          >
             Don&apos;t have an account? Sign Up
           </Link>
         </div>

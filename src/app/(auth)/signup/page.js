@@ -15,41 +15,31 @@ const Signup = () => {
     username: '',
     email: '',
     password: '',
-    avatar: null,
   });
+  
 
   const handleChange = (e) => {
-    const { name, value, files } = e.target;
-    if (name === "avatar") {
-      setFormData({
-        ...formData,
-        avatar: files[0], // Update avatar state with the selected file
-      });
-    } else {
-      setFormData({
-        ...formData,
-        [name]: value,
-      });
-    }
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
   };
-
+  
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-
-    const data = new FormData();
-    data.append('fullname', formData.fullname);
-    data.append('username', formData.username);
-    data.append('email', formData.email);
-    data.append('password', formData.password);
-    data.append('avatar', formData.avatar); // Append the avatar file to FormData
-
+  
+    const data = {
+      fullname: formData.fullname,
+      username: formData.username,
+      email: formData.email,
+      password: formData.password,
+      // No avatar now
+    };
+  
     try {
-      const response = await axios.post('/api/user/signup', data, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });
+      const response = await axios.post('/api/user/signup', data);  // No multipart/form-data headers needed
       toast.success('User registered successfully!');
       router.push('/signin');
       console.log(response.data);
@@ -60,7 +50,8 @@ const Signup = () => {
       setLoading(false);
     }
   };
-
+  
+  
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 to-black py-12 px-4 sm:px-6 lg:px-8">
       <motion.div
@@ -93,18 +84,7 @@ const Signup = () => {
               </div>
             ))}
 
-            {/* Avatar Input Field */}
-            <div>
-              <label htmlFor="avatar" className="sr-only">Avatar</label>
-              <input
-                id="avatar"
-                name="avatar"
-                type="file"
-                accept="image/*"
-                className="appearance-none rounded-none relative block w-full px-3 py-3 border border-gray-700 placeholder-gray-400 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm bg-gray-800 rounded-b-md"
-                onChange={handleChange}
-              />
-            </div>
+           
           </div>
 
           <div>

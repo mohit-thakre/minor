@@ -1,81 +1,114 @@
-"use client"
+"use client";
 
-import axios from "axios"
-import React, { useState, useEffect } from "react"
-import TestimonialCard from "../../../components/TestimonialCard"
-import toast,{ Toaster } from "react-hot-toast"
-import { useRouter } from "next/navigation"
-import Link from "next/link"
-import Image from "next/image"
-import { motion } from "framer-motion"
-import { FaUserCircle, FaEnvelope, FaSignOutAlt, FaExternalLinkAlt } from "react-icons/fa"
-import { FaFacebook, FaLinkedinIn, FaTwitter } from "react-icons/fa"
+import axios from "axios";
+import React, { useState, useEffect } from "react";
+import TestimonialCard from "../../../components/TestimonialCard";
+import toast, { Toaster } from "react-hot-toast";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+import Image from "next/image";
+import { motion } from "framer-motion";
+import {
+  FaUserCircle,
+  FaEnvelope,
+  FaSignOutAlt,
+  FaExternalLinkAlt,
+} from "react-icons/fa";
+import { FaFacebook, FaLinkedinIn, FaTwitter } from "react-icons/fa";
 
 function ProfilePage() {
-  const router = useRouter()
-  const [user, setUser] = useState(null)
-  const [testimonials, setTestimonials] = useState([])
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState(null)
+  const router = useRouter();
+  const [user, setUser] = useState(null);
+  const [testimonials, setTestimonials] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
-  const totalTestimonials = testimonials.length
+  const totalTestimonials = testimonials.length;
 
   const handleLogout = async () => {
     try {
-      await axios.get("/api/user/logout")
-      toast.success("User logged out successfully!")
-      router.push("/signin")
+      await axios.get("/api/user/logout");
+      toast.success("User logged out successfully!");
+      router.push("/signin");
     } catch (error) {
-      toast.error("Failed to logout user!")
-      console.log("Error:", error.message)
+      toast.error("Failed to logout user!");
+      console.log("Error:", error.message);
     } finally {
-      router.push("/signin")
+      router.push("/signin");
     }
-  }
+  };
 
   useEffect(() => {
     const fetchUserProfile = async () => {
-      setLoading(true)
+      setLoading(true);
       try {
-        const response = await axios.get("/api/user/profile")
-        setUser(response.data.user)
-        setTestimonials(response.data.testimonials)
-        setLoading(false)
+        const response = await axios.get("/api/user/profile");
+        setUser(response.data.user);
+        setTestimonials(response.data.testimonials);
+        setLoading(false);
       } catch (error) {
-        setError(error)
-        setLoading(false)
+        setError(error);
+        setLoading(false);
       }
-    }
+    };
 
-    fetchUserProfile()
-  }, [])
+    fetchUserProfile();
+  }, []);
 
-  const generateEmbedCode = (testimonialId) => {
-    const embedCode = `<iframe src="${process.env.NEXT_PUBLIC_BASE_URL}/embed/testimonial/${testimonialId}" width="100%" height="200" frameborder="0"></iframe>`
-    navigator.clipboard.writeText(embedCode)
-    toast.success("Embed code copied to clipboard!")
+  const generateEmbedCode = () => {
+    const codeToCopy = `
+import axios from 'axios';
+
+const BASE_URL = process.env.NEXT_PUBLIC_WEBSITE_DOMAIN;
+
+async function fetchTestimonials() {
+  try {
+    const response = await axios.get(\`\${BASE_URL}/api/testimonials/gettesti\`);
+    console.log('Testimonials:', response.data.data);
+    return response.data.data;
+  } catch (error) {
+    console.error('Error fetching testimonials:', error.response?.data || error.message);
   }
+}
+  `;
+    navigator.clipboard.writeText(codeToCopy);
+    toast.success("Code copied to clipboard!");
+  };
+
+  const [showEmbedModal, setShowEmbedModal] = useState(false);
+  const [embedCode, setEmbedCode] = useState("");
+
+  const copyEmbedCode = () => {
+    navigator.clipboard.writeText(embedCode);
+    toast.success("Embed code copied!");
+  };
 
   if (loading) {
     return (
       <div className="min-h-screen flex justify-center items-center bg-gradient-to-br from-gray-900 to-black">
         <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-white"></div>
       </div>
-    )
+    );
   }
 
   if (error) {
     return (
       <div className="min-h-screen flex justify-center items-center bg-gradient-to-br from-gray-900 to-black">
-        <div className="bg-red-600 text-white p-4 rounded-lg shadow-lg">Error: {error.message}</div>
+        <div className="bg-red-600 text-white p-4 rounded-lg shadow-lg">
+          Error: {error.message}
+        </div>
       </div>
-    )
+    );
   }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 to-black text-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+        >
           <h1 className="text-4xl font-bold text-center mb-12">Your Profile</h1>
         </motion.div>
 
@@ -86,7 +119,7 @@ function ProfilePage() {
             transition={{ delay: 0.2, duration: 0.5 }}
             className="bg-gray-800 p-8 rounded-xl shadow-2xl mb-12"
           >
-             <div className="flex items-center space-x-8 mb-8">
+            <div className="flex items-center space-x-8 mb-8">
               <div className="relative">
                 <Image
                   src={user?.avatarUrl || "/placeholder.svg"}
@@ -98,8 +131,13 @@ function ProfilePage() {
               </div>
               <div className="flex-grow">
                 <div className="flex items-center space-x-4 mb-4">
-                  <h2 className="text-2xl font-semibold text-white">{user.username || user.fullname.split(" ")[0]}</h2>
-                  <Link href='/edit-profile' className="px-4 py-1 text-sm font-semibold text-black bg-white rounded-md hover:bg-gray-200 transition duration-300">
+                  <h2 className="text-2xl font-semibold text-white">
+                    {user.username || user.fullname.split(" ")[0]}
+                  </h2>
+                  <Link
+                    href="/edit-profile"
+                    className="px-4 py-1 text-sm font-semibold text-black bg-white rounded-md hover:bg-gray-200 transition duration-300"
+                  >
                     Edit Profile
                   </Link>
                 </div>
@@ -107,16 +145,14 @@ function ProfilePage() {
                   <span>
                     <strong>{testimonials.length}</strong> Reviews
                   </span>
-                  <span>
-                    {/* <strong>1.5K</strong> followers */}
-                  </span>
-                  <span>
-                    {/* <strong>1K</strong> following */}
-                  </span>
+                  <span>{/* <strong>1.5K</strong> followers */}</span>
+                  <span>{/* <strong>1K</strong> following */}</span>
                 </div>
                 <p className="text-white font-semibold">{user.fullname}</p>
                 <p className="text-gray-400">{user.email}</p>
-                <p className="text-white">Professional testimonial collector and reviewer</p>
+                <p className="text-white">
+                  Professional testimonial collector and reviewer
+                </p>
               </div>
             </div>
           </motion.div>
@@ -157,18 +193,61 @@ function ProfilePage() {
               key={testimonial._id}
               whileHover={{ scale: 1.03 }}
               transition={{ duration: 0.2 }}
-              className="bg-gray-800 rounded-xl overflow-hidden shadow-lg"
+              className="bg-gray-800 rounded-xl overflow-hidden shadow-lg relative"
             >
               <TestimonialCard {...testimonial} />
+
+              {/* Embed Button */}
+              <button
+                onClick={() => generateEmbedCode()}
+                className="absolute top-4 right-4 bg-white text-black px-3 py-1 rounded-md text-sm hover:bg-gray-300 transition"
+              >
+                Embed
+              </button>
             </motion.div>
           ))}
         </motion.div>
       </div>
+      {showEmbedModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50">
+          <motion.div
+            initial={{ scale: 0 }}
+            animate={{ scale: 1 }}
+            className="bg-white p-8 rounded-xl shadow-lg text-black max-w-lg w-full relative"
+          >
+            <h3 className="text-xl font-bold mb-4">Embed Testimonial</h3>
+
+            <div className="border p-4 mb-4">
+              {/* Live Preview */}
+              <iframe
+                srcDoc={embedCode}
+                width="100%"
+                height="200"
+                className="border rounded-md"
+              />
+            </div>
+
+            <div className="flex justify-end space-x-4">
+              <button
+                onClick={copyEmbedCode}
+                className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition"
+              >
+                Copy Embed Code
+              </button>
+              <button
+                onClick={() => setShowEmbedModal(false)}
+                className="px-4 py-2 bg-gray-400 text-white rounded-md hover:bg-gray-500 transition"
+              >
+                Close
+              </button>
+            </div>
+          </motion.div>
+        </div>
+      )}
 
       <Toaster />
     </div>
-  )
+  );
 }
 
-export default ProfilePage
-
+export default ProfilePage;
